@@ -27,7 +27,7 @@ const Key = (props) => {
   // const {gameState, setGameState} = useContext(GameStateContext);
 
   const handleKeyPress = () => {
-    onKey(char);
+    onKey(char.toUpperCase());
     // let move = [...gameState];
     // const newIdx = move.indexOf('');
     // if (char === '↩' && move[0] !== '') {

@@ -50,7 +50,7 @@ const Keyboard = (props) => {
   const [keyState, setKeyState] = useState(keys);
 
   const onKey = (char) => {
-    if (char === 'enter') {
+    if (char === 'ENTER') {
       onEnter();
     } else if (char === '↩') {
       onDelete();

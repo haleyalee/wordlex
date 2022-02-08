@@ -11,12 +11,12 @@ const rowStyles = StyleSheet.create({
 });
 const CompletedRow = (props) => {
 
-  const {guess} = props;
+  const {guess, colorState} = props;
 
   return(
     <View style={rowStyles.row}>
       {guess.map((letter, idx) =>
-        <Tile key={idx} letter={letter} />
+        <Tile key={idx} letter={letter} color={colorState[idx]} />
       )}
     </View>
   );

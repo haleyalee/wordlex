@@ -14,7 +14,7 @@ const gridStyles = StyleSheet.create({
 
 const Grid = (props) => {
 
-  const {currentGuess} = props;
+  const {currentGuess, colorState} = props;
   const {gameState, setGameState} = useContext(GameStateContext);
   const [currentBoard, setCurrentBoard] = useState(gameState);
 
@@ -25,12 +25,13 @@ const Grid = (props) => {
   }, [gameState])
 
   const empty = gameState.length < 5 ? Array.from(Array(5 - gameState.length)) : [];
+  console.log(colorState);
 
   return(
     <View style={gridStyles.board}>
       {/* Previous Guesses */}
       {gameState.map((guess, idx) => 
-        <CompletedRow key={idx} guess={guess} />
+        <CompletedRow key={idx} guess={guess} colorState={colorState[idx]} />
       )}
       {/* Current Guess */}
       {gameState.length < 6 && <CurrentRow guess={currentGuess} />}

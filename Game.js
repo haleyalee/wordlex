@@ -25,6 +25,7 @@ const Game = () => {
   const [gameWon, setGameWon] = useState(false);
   const [gameLost, setGameLost] = useState(false);
   const [currentGuess, setCurrentGuess] = useState([]);
+  const [colorState, setColorState] = useState([]);
 
   useEffect(() => {
 
@@ -48,21 +49,26 @@ const Game = () => {
       } 
       // Regular turn
       else {
+        const colors = [];
         currentGuess.forEach((letter, idx) => {
           const targetLetter = targetWord[idx];
-          // Exact match
+          // Correct: Exact match
           if (letter === targetLetter) {
             // set letter green
+            colors.push('#538d4e');
           }
-          // Wrong position
+          // Present: Wrong position
           else if (targetWord.includes(letter)) {
             // set letter yellow
+            colors.push('#b59f3b');
           }
-          // Does not contain 
+          // Absent: Does not contain 
           else {
             // set letter gray
+            colors.push('#3a3a3c');
           }
-        })
+        });
+        setColorState([...colorState, colors]);
       }
       setGameState([...gameState, currentGuess]);
       setCurrentGuess([]);
@@ -86,7 +92,7 @@ const Game = () => {
 
       <StatusBar style="auto" />
       <Header />
-      <Grid currentGuess={currentGuess} />
+      <Grid currentGuess={currentGuess} colorState={colorState}/>
       <Keyboard onEnter={onEnter} onDelete={onDelete} onChar={onChar} />
 
     </View>
