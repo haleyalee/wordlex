@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import Grid from './components/Board/Grid';
 import Header from './components/Header';
 import Keyboard from './components/Keyboard/Keyboard';
-import GameStateContext from './GameStateContext';
+import GameStateContext from './contexts/GameStateContext';
 
 const styles = StyleSheet.create({
   container: {

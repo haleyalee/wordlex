@@ -1,6 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react';
 import { StyleSheet, View } from 'react-native';
-import GameStateContext from '../../GameStateContext';
+import GameStateContext from '../../contexts/GameStateContext';
 
 import CurrentRow from './CurrentRow';
 import CompletedRow from './CompletedRow';
