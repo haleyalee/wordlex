@@ -6,6 +6,9 @@ import Header from './components/Header';
 import Keyboard from './components/Keyboard/Keyboard';
 import GameStateContext from './contexts/GameStateContext';
 
+import COLOR_CODES from './constants/colorCodes';
+import VALID_WORDS from './constants/validWords';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -16,11 +19,6 @@ const styles = StyleSheet.create({
 });
 
 const word = 'light';
-
-const colorCodes = { correct: '#538d4e',
-                     present: '#b59f3b',
-                     incorrect: '#3a3a3c',
-                     neutral: '#818384' };
 
 const keys = [{char: 'Q', color: '#818384'},
               {char: 'W', color: '#818384'},    
@@ -71,6 +69,8 @@ const Game = () => {
     if (currentGuess.length !== 5) return;
 
     // Case 2: Word is not a real word
+    if (!VALID_WORDS.includes(currentGuess.join().toLowerCase())) return;
+    }
 
     // Case 3: Word is 5 letters and there are guesses remaining
     if (currentGuess.length === 5 && gameState.length<6) {
@@ -90,7 +90,6 @@ const Game = () => {
 
         // Correct
         cpyGuess.forEach((letter, idx) => {
-          // console.log(`Letter: ${letter.char}; Target: ${cpyTarget[idx].char}`);
           if (letter.char === cpyTarget[idx].char) {
             letter.stat = 1;
             cpyTarget[idx].stat = 1;
@@ -99,8 +98,6 @@ const Game = () => {
 
         // Present and Incorrect
         cpyGuess.forEach((letter, idx) => {
-          // console.log(`Letter: ${letter.char}; Target: ${cpyTarget[idx].char}`);
-          // console.log(letter.stat);
           if (letter.stat === 0) {
             const targetIdx = cpyTarget.findIndex((l) => l.char === letter.char && l.stat === letter.stat);
             if (targetIdx !== -1) {
@@ -117,25 +114,25 @@ const Game = () => {
           let keyObj = {char: letter.char};
 
           if (letter.stat === 1) {
-            colors.push(colorCodes.correct);
-            keyObj.color = colorCodes.correct;
+            colors.push(COLOR_CODES.correct);
+            keyObj.color = COLOR_CODES.correct;
           }
           else if (letter.stat === 2) {
-            colors.push(colorCodes.present);
-            keyObj.color = colorCodes.present;
+            colors.push(COLOR_CODES.present);
+            keyObj.color = COLOR_CODES.present;
           }
           else {
-            colors.push(colorCodes.incorrect);
-            keyObj.color = colorCodes.incorrect;
+            colors.push(COLOR_CODES.incorrect);
+            keyObj.color = COLOR_CODES.incorrect;
           }
 
           keys.find((letter, idx) => {
             if (letter.char === keyObj.char) {
-              if (keyObj.color === colorCodes.correct || letter.color === colorCodes.correct) {
-                keyObj.color = colorCodes.correct;
+              if (keyObj.color === COLOR_CODES.correct || letter.color === COLOR_CODES.correct) {
+                keyObj.color = COLOR_CODES.correct;
               }
-              else if (keyObj.color === colorCodes.present || letter.color === colorCodes.present) {
-                keyObj.color = colorCodes.present;
+              else if (keyObj.color === COLOR_CODES.present || letter.color === COLOR_CODES.present) {
+                keyObj.color = COLOR_CODES.present;
               }
               keys[idx] = keyObj;
               return true;
