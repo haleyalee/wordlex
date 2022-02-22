@@ -25,7 +25,7 @@ const Grid = (props) => {
   }, [gameState])
 
   const empty = gameState.length < 5 ? Array.from(Array(5 - gameState.length)) : [];
-  console.log(colorState);
+  // console.log(colorState);
 
   return(
     <View style={gridStyles.board}>

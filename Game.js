@@ -17,6 +17,11 @@ const styles = StyleSheet.create({
 
 const word = 'light';
 
+const colorCodes = { correct: '#538d4e',
+                     present: '#b59f3b',
+                     incorrect: '#3a3a3c',
+                     neutral: '#818384' };
+
 const keys = [{char: 'Q', color: '#818384'},
               {char: 'W', color: '#818384'},    
               {char: 'E', color: '#818384'},
@@ -80,30 +85,58 @@ const Game = () => {
       // Regular turn
       else {
         const colors = [];
-        currentGuess.forEach((letter, idx) => {
-          const targetLetter = targetWord[idx];
-          let keyObj = {char: letter};
-          // Correct: Exact match
-          if (letter === targetLetter) {
-            // set letter green
-            colors.push('#538d4e');
-            keyObj.color = '#538d4e';
+        const cpyGuess = [...currentGuess].map(letter => { return { char: letter, stat: 0 } });
+        const cpyTarget = [...targetWord].map(letter => { return { char: letter, stat: 0 } });
+
+        // Correct
+        cpyGuess.forEach((letter, idx) => {
+          // console.log(`Letter: ${letter.char}; Target: ${cpyTarget[idx].char}`);
+          if (letter.char === cpyTarget[idx].char) {
+            letter.stat = 1;
+            cpyTarget[idx].stat = 1;
           }
-          // Present: Wrong position
-          else if (targetWord.includes(letter)) {
-            // check for duplicates
-            // set letter yellow
-            colors.push('#b59f3b');
-            keyObj.color = '#b59f3b';
+        });
+
+        // Present and Incorrect
+        cpyGuess.forEach((letter, idx) => {
+          // console.log(`Letter: ${letter.char}; Target: ${cpyTarget[idx].char}`);
+          // console.log(letter.stat);
+          if (letter.stat === 0) {
+            const targetIdx = cpyTarget.findIndex((l) => l.char === letter.char && l.stat === letter.stat);
+            if (targetIdx !== -1) {
+              letter.stat = 2;
+              cpyTarget[targetIdx].stat = 1;
+            }
+            else {
+              letter.stat = 3;
+            }
           }
-          // Absent: Does not contain 
+        });
+
+        cpyGuess.forEach(letter => {
+          let keyObj = {char: letter.char};
+
+          if (letter.stat === 1) {
+            colors.push(colorCodes.correct);
+            keyObj.color = colorCodes.correct;
+          }
+          else if (letter.stat === 2) {
+            colors.push(colorCodes.present);
+            keyObj.color = colorCodes.present;
+          }
           else {
-            // set letter gray
-            colors.push('#3a3a3c');
-            keyObj.color = '#3a3a3c';
+            colors.push(colorCodes.incorrect);
+            keyObj.color = colorCodes.incorrect;
           }
+
           keys.find((letter, idx) => {
             if (letter.char === keyObj.char) {
+              if (keyObj.color === colorCodes.correct || letter.color === colorCodes.correct) {
+                keyObj.color = colorCodes.correct;
+              }
+              else if (keyObj.color === colorCodes.present || letter.color === colorCodes.present) {
+                keyObj.color = colorCodes.present;
+              }
               keys[idx] = keyObj;
               return true;
             }
