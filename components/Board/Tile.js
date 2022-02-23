@@ -23,10 +23,10 @@ const Tile = (props) => {
   
   const tileStyle = (myColor) => {
     return {
-      backgroundColor: myColor,
+      backgroundColor: (letter) ? myColor : '#121213',
       height: 62,
       width: 62,
-      borderColor: '#3a3a3c',
+      borderColor: (letter) ? ((myColor === '#121213') ? '#565758' : myColor) : '#3a3a3c',
       borderWidth: 2,
       margin: 2,
       color: '#d7dadc',

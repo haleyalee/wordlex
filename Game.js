@@ -86,7 +86,7 @@ const Game = () => {
     }
 
     // Case 2: Word is not a real word
-    if (!VALID_WORDS.includes(currentGuess.join().toLowerCase())) {
+    if (!VALID_WORDS.includes(currentGuess.join('').toLowerCase())) {
       setToasterMsg('Not a valid word');
       setShowToaster(true);
       return;
