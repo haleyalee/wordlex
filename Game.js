@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
+import GameStateContext from './contexts/GameStateContext';
 import Grid from './components/Board/Grid';
+import Toaster from './components/Toaster/Toaster';
 import Header from './components/Header';
 import Keyboard from './components/Keyboard/Keyboard';
-import GameStateContext from './contexts/GameStateContext';
 
 import COLOR_CODES from './constants/colorCodes';
 import VALID_WORDS from './constants/validWords';
@@ -15,6 +16,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#121213',
     alignItems: 'center',
     justifyContent: 'space-around',
+    position: 'relative'
   }
 });
 
@@ -59,17 +61,35 @@ const Game = () => {
   const [currentGuess, setCurrentGuess] = useState([]);
   const [colorState, setColorState] = useState([]);
   const [keyState, setKeyState] = useState(keys);
+  const [showToaster, setShowToaster] = useState(false);
+  const [toasterMsg, setToasterMsg] = useState('');
 
   useEffect(() => {
     setKeyState(keys);
   }, [keys]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (showToaster) {
+        setShowToaster(false);
+      }
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [showToaster])
+
   const onEnter = () => {
     // Case 1: Word is not 5 letters
-    if (currentGuess.length !== 5) return;
+    if (currentGuess.length !== 5) {
+      setToasterMsg('Not enough letters');
+      setShowToaster(true);
+      return;
+    }
 
     // Case 2: Word is not a real word
-    if (!VALID_WORDS.includes(currentGuess.join().toLowerCase())) return;
+    if (!VALID_WORDS.includes(currentGuess.join().toLowerCase())) {
+      setToasterMsg('Not a valid word');
+      setShowToaster(true);
+      return;
     }
 
     // Case 3: Word is 5 letters and there are guesses remaining
@@ -163,6 +183,7 @@ const Game = () => {
 
       <StatusBar style="auto" />
       <Header />
+      { showToaster && toasterMsg && <Toaster message={toasterMsg} /> }
       <Grid currentGuess={currentGuess} colorState={colorState}/>
       <Keyboard onEnter={onEnter} onDelete={onDelete} onChar={onChar} keys={keyState} />
 
