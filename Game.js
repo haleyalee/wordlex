@@ -64,106 +64,128 @@ const Game = () => {
   const [showToaster, setShowToaster] = useState(false);
   const [toasterMsg, setToasterMsg] = useState('');
 
+  // Update keyboard colors
   useEffect(() => {
     setKeyState(keys);
   }, [keys]);
 
+  // Hide toaster after 1s
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const toasterTimer = setTimeout(() => {
       if (showToaster) {
         setShowToaster(false);
+        setToasterMsg('');
       }
     }, 1000);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(toasterTimer);
   }, [showToaster])
+
+  // Game ends
+  useEffect(() => {
+    if (gameWon) {
+      console.log("GAME WON");
+    }
+    else if (gameLost) {
+      console.log("GAME LOST")
+    }
+  }, [gameWon, gameLost]);
 
   const onEnter = () => {
     // Case 1: Word is not 5 letters
-    if (currentGuess.length !== 5) {
+    if (currentGuess.length !== 5 && !gameWon) {
       setToasterMsg('Not enough letters');
       setShowToaster(true);
       return;
     }
 
     // Case 2: Word is not a real word
-    if (!VALID_WORDS.includes(currentGuess.join('').toLowerCase())) {
+    if (!VALID_WORDS.includes(currentGuess.join('').toLowerCase()) && !gameWon) {
       setToasterMsg('Not a valid word');
       setShowToaster(true);
       return;
     }
 
     // Case 3: Word is 5 letters and there are guesses remaining
-    if (currentGuess.length === 5 && gameState.length<6) {
-      // Game is won
-      if (currentGuess === targetWord) {
-        setGameWon(true);
-      }
-      // Game is lost
-      else if (gameState.length === 5) {
-        setGameLost(true);
-      } 
-      // Regular turn
-      else {
-        const colors = [];
-        const cpyGuess = [...currentGuess].map(letter => { return { char: letter, stat: 0 } });
-        const cpyTarget = [...targetWord].map(letter => { return { char: letter, stat: 0 } });
+    if (currentGuess.length === 5 && gameState.length<6 && !gameWon) {
 
-        // Correct
-        cpyGuess.forEach((letter, idx) => {
-          if (letter.char === cpyTarget[idx].char) {
-            letter.stat = 1;
-            cpyTarget[idx].stat = 1;
-          }
-        });
+      const colors = [];
+      const cpyGuess = [...currentGuess].map(letter => { return { char: letter, stat: 0 } });
+      const cpyTarget = [...targetWord].map(letter => { return { char: letter, stat: 0 } })
 
-        // Present and Incorrect
-        cpyGuess.forEach((letter, idx) => {
-          if (letter.stat === 0) {
-            const targetIdx = cpyTarget.findIndex((l) => l.char === letter.char && l.stat === letter.stat);
-            if (targetIdx !== -1) {
-              letter.stat = 2;
-              cpyTarget[targetIdx].stat = 1;
-            }
-            else {
-              letter.stat = 3;
-            }
-          }
-        });
+      // Correct
+      cpyGuess.forEach((letter, idx) => {
+        if (letter.char === cpyTarget[idx].char) {
+          letter.stat = 1;
+          cpyTarget[idx].stat = 1;
+        }
+      });
 
-        cpyGuess.forEach(letter => {
-          let keyObj = {char: letter.char};
-
-          if (letter.stat === 1) {
-            colors.push(COLOR_CODES.correct);
-            keyObj.color = COLOR_CODES.correct;
-          }
-          else if (letter.stat === 2) {
-            colors.push(COLOR_CODES.present);
-            keyObj.color = COLOR_CODES.present;
+      // Present and Incorrect
+      cpyGuess.forEach((letter, idx) => {
+        if (letter.stat === 0) {
+          const targetIdx = cpyTarget.findIndex((l) => l.char === letter.char && l.stat === letter.stat);
+          if (targetIdx !== -1) {
+            letter.stat = 2;
+            cpyTarget[targetIdx].stat = 1;
           }
           else {
-            colors.push(COLOR_CODES.incorrect);
-            keyObj.color = COLOR_CODES.incorrect;
+            letter.stat = 3;
           }
+        }
+      });
 
-          keys.find((letter, idx) => {
-            if (letter.char === keyObj.char) {
-              if (keyObj.color === COLOR_CODES.correct || letter.color === COLOR_CODES.correct) {
-                keyObj.color = COLOR_CODES.correct;
-              }
-              else if (keyObj.color === COLOR_CODES.present || letter.color === COLOR_CODES.present) {
-                keyObj.color = COLOR_CODES.present;
-              }
-              keys[idx] = keyObj;
-              return true;
+      // Update grid and keyboard colors
+      cpyGuess.forEach(letter => {
+        let keyObj = {char: letter.char};
+
+        if (letter.stat === 1) {
+          colors.push(COLOR_CODES.correct);
+          keyObj.color = COLOR_CODES.correct;
+        }
+        else if (letter.stat === 2) {
+          colors.push(COLOR_CODES.present);
+          keyObj.color = COLOR_CODES.present;
+        }
+        else {
+          colors.push(COLOR_CODES.incorrect);
+          keyObj.color = COLOR_CODES.incorrect;
+        }
+
+        keys.find((letter, idx) => {
+          if (letter.char === keyObj.char) {
+            if (keyObj.color === COLOR_CODES.correct || letter.color === COLOR_CODES.correct) {
+              keyObj.color = COLOR_CODES.correct;
             }
-          });
+            else if (keyObj.color === COLOR_CODES.present || letter.color === COLOR_CODES.present) {
+              keyObj.color = COLOR_CODES.present;
+            }
+            keys[idx] = keyObj;
+            return true;
+          }
         });
-        setColorState([...colorState, colors]);
-      }
-      setGameState([...gameState, currentGuess]);
-      setCurrentGuess([]);
+      });
+      setColorState([...colorState, colors]);
     }
+
+    setGameState([...gameState, currentGuess]);
+    setCurrentGuess([]);
+    
+    // Game is won
+    if (currentGuess.join('') === targetWord.join('')) {
+      setToasterMsg('Magnificent');
+      setShowToaster(true);
+      setGameWon(true);
+      return;
+    }
+
+    // Game is lost
+    if (gameState.length === 5) {
+      setToasterMsg(targetWord.join('').toUpperCase());
+      setShowToaster(true);
+      setGameLost(true);
+      return;
+    }
+    
   }
 
   const onDelete = () => {
