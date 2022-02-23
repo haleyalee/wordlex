@@ -17,7 +17,6 @@ const tileStyles = StyleSheet.create({
 });
 
 const Tile = (props) => {
-  // const [letter, setLetter] = useState('');
   const {letter} = props;
   const [color, setColor] = useState(props.color || '#121213');
   
