@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import GameStateContext from './contexts/GameStateContext';
 import Grid from './components/Board/Grid';
 import Toaster from './components/Toaster/Toaster';
+import Modal from './components/Modal/Modal';
 import Header from './components/Header';
 import Keyboard from './components/Keyboard/Keyboard';
 
@@ -63,6 +64,8 @@ const Game = () => {
   const [keyState, setKeyState] = useState(keys);
   const [showToaster, setShowToaster] = useState(false);
   const [toasterMsg, setToasterMsg] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
 
   // Update keyboard colors
   useEffect(() => {
@@ -84,11 +87,21 @@ const Game = () => {
   useEffect(() => {
     if (gameWon) {
       console.log("GAME WON");
+      setModalMsg("You won!");
+      setShowModal(true);
     }
     else if (gameLost) {
       console.log("GAME LOST")
+      setModalMsg("You lost!");
+      setShowModal(true);
     }
   }, [gameWon, gameLost]);
+
+  const handleClose = () => {
+    console.log("closing modal");
+    setShowModal(false);
+    setModalMsg('');
+  }
 
   const onEnter = () => {
     // Case 1: Word is not 5 letters
@@ -184,8 +197,7 @@ const Game = () => {
       setShowToaster(true);
       setGameLost(true);
       return;
-    }
-    
+    } 
   }
 
   const onDelete = () => {
@@ -206,6 +218,7 @@ const Game = () => {
       <StatusBar style="auto" />
       <Header />
       { showToaster && toasterMsg && <Toaster message={toasterMsg} /> }
+      { showModal && modalMsg && <Modal message={modalMsg} handleClose={handleClose} /> }
       <Grid currentGuess={currentGuess} colorState={colorState}/>
       <Keyboard onEnter={onEnter} onDelete={onDelete} onChar={onChar} keys={keyState} />
 
